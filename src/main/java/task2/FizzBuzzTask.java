@@ -1,11 +1,15 @@
 package task2;
 
+import lombok.Getter;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FizzBuzzTask {
-    private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+    @Getter
+    private BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+    @Getter
     private final AtomicInteger currentNumber = new AtomicInteger(1);
     private final int n;
 
@@ -13,69 +17,71 @@ public class FizzBuzzTask {
         this.n = n;
     }
 
-    public BlockingQueue<String> getQueue() {
-        return queue;
-    }
-
     public void fizz() {
-        try {
-            while (true) {
-                int num = currentNumber.get();
-                if (num > n) break;
-                if (num % 3 == 0 && num % 5 != 0) {
-                    queue.put("fizz");
+        while (true) {
+            synchronized (currentNumber) {
+                if (currentNumber.get() > n) break;
+                int current = currentNumber.get();
+                if (current % 3 == 0 && current % 5 != 0) {
+                    try {
+                        queue.put("fizz");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     currentNumber.incrementAndGet();
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 
     public void buzz() {
-        try {
-            while (true) {
-                int num = currentNumber.get();
-                if (num > n) break;
-                if (num % 5 == 0 && num % 3 != 0) {
-                    queue.put("buzz");
+        while (true) {
+            synchronized (currentNumber) {
+                if (currentNumber.get() > n) break;
+                int current = currentNumber.get();
+                if (current % 5 == 0 && current % 3 != 0) {
+                    try {
+                        queue.put("buzz");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     currentNumber.incrementAndGet();
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 
     public void fizzbuzz() {
-        try {
-            while (true) {
-                int num = currentNumber.get();
-                if (num > n) break;
-                if (num % 15 == 0) {
-                    queue.put("fizzbuzz");
+        while (true) {
+            synchronized (currentNumber) {
+                if (currentNumber.get() > n) break;
+                int current = currentNumber.get();
+                if (current % 3 == 0 && current % 5 == 0) {
+                    try {
+                        queue.put("fizzbuzz");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     currentNumber.incrementAndGet();
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 
     public void number() {
-        try {
-            while (true) {
-                int num = currentNumber.get();
-                if (num > n) break;
-                if (num % 3 != 0 && num % 5 != 0) {
-                    queue.put(String.valueOf(num));
+        while (true) {
+            synchronized (currentNumber) {
+                if (currentNumber.get() > n) break;
+                int current = currentNumber.get();
+                if (current % 3 != 0 && current % 5 != 0) {
+                    try {
+                        queue.put(Integer.toString(current));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     currentNumber.incrementAndGet();
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 }
-
-
